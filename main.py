@@ -33,4 +33,6 @@ def generate_plan():
         return jsonify({"success": True, "plan_raw": plan})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
-
+@app.route("/", methods=["GET"])
+def home():
+    return "服务运行中"
