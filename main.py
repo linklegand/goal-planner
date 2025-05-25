@@ -1,9 +1,15 @@
 from flask import Flask, request, jsonify
-import openai
+from openai import OpenAI
 import os
 
 app = Flask(__name__)
-openai.api_key = os.getenv("OPENAI_API_KEY")
+
+# 初始化 OpenAI 客户端
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+@app.route("/", methods=["GET"])
+def home():
+    return "服务运行中"
 
 @app.route("/generate_plan", methods=["POST"])
 def generate_plan():
@@ -23,18 +29,16 @@ def generate_plan():
     )
 
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7
         )
 
-        plan = response["choices"][0]["message"]["content"]
+        plan = response.choices[0].message.content
         return jsonify({"success": True, "plan_raw": plan})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
-@app.route("/", methods=["GET"])
-def home():
-    return "服务运行中"
-if __name__== "__main__":
-    app.run(host="0.0.0.0",port=8000)
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8000)
