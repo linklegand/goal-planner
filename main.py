@@ -36,3 +36,5 @@ def generate_plan():
 @app.route("/", methods=["GET"])
 def home():
     return "服务运行中"
+if __name__=="__main__":
+    app.run(host="0.0.0.0",port=8000)
